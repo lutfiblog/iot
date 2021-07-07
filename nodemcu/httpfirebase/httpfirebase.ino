@@ -50,7 +50,7 @@ void loop() {
     WiFiClientSecure client;
     HTTPClient http;  
     client.setInsecure();
-    http.begin(client, "https://lutfiiot-default-rtdb.firebaseio.com");  
+    http.begin(client, "https://lutfi-default-rtdb.firebaseio.com");  
     http.setURL("/.json");
     http.addHeader("Content-Type", "application/json");  //filejson header
 
