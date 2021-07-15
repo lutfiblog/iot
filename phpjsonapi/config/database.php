@@ -1,21 +1,18 @@
-<?php 
-    class Database {
-        private $host = "127.0.0.1";
-        private $database_name = "phpapi";
-        private $username = "root";
-        private $password = "";
-
-        public $conn;
-
-        public function getConnection(){
-            $this->conn = null;
-            try{
-                $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->database_name, $this->username, $this->password);
-                $this->conn->exec("set names utf8");
-            }catch(PDOException $exception){
-                echo "Database could not be connected: " . $exception->getMessage();
-            }
-            return $this->conn;
-        }
-    }  
+<?php
+class Database{
+	
+	private $host  = 'localhost';
+    private $user  = 'root';
+    private $password   = "";
+    private $database  = "phpapi"; 
+    
+    public function getConnection(){		
+		$conn = new mysqli($this->host, $this->user, $this->password, $this->database);
+		if($conn->connect_error){
+			die("Error failed to connect to MySQL: " . $conn->connect_error);
+		} else {
+			return $conn;
+		}
+    }
+}
 ?>
