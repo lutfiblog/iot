@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lutfi iot</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.4.1/dist/chart.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div x-data="greet()">
+        <button @click="isActive = 0">Bar Chart</button>
+        <button @click="isActive = 1">Line Chart</button>
+        <button @click="kon1ON()">ON</button>
+        <button @click="kon1OFF()">OFF</button>        
+        <button @click="kon2ON()">ON</button>
+        <button @click="kon2OFF()">OFF</button>
+        <canvas x-show="isActive === 0" id="barChart" width="200" height="200"></canvas>
+        <canvas x-show="isActive === 1" id="lineChart" width="200" height="200"></canvas>
+    </div>
+
+    <script>
+        function greet() {
+            return {
+                isActive: 0,
+                showChart() {
+                    myChart;
+                },
+                kon1ON() {
+                    axios.post('http://localhost/PHP/api2/iot/update.php', {
+                        id: 1,
+                        kon1: 1
+                    })
+                },
+                kon1OFF() {
+                    axios.post('http://localhost/PHP/api2/iot/update.php', {
+                        id: 1,
+                        kon1: 0
+                    })
+                },
+                kon2ON() {
+                    axios.post('http://localhost/PHP/api2/iot/update.php', {
+                        id: 1,
+                        kon2: 1
+                    })
+                },
+                kon2OFF() {
+                    axios.post('http://localhost/PHP/api2/iot/update.php', {
+                        id: 1,
+                        kon2: 0
+                    })
+                },
+                
+
+            };
+        }
+        var mon1 = [],
+            time = [],
+            randMon = [],
+            timeNow = [];
+
+        var ctx = document.getElementById('barChart').getContext('2d');
+        var ctx2 = document.getElementById('lineChart').getContext('2d');
+        var barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: time,
+                datasets: [{
+                    label: '# of Votes',
+                    data: randMon,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 1
+                }]
+            },
+        });
+
+        var lineChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: time,
+                datasets: [{
+                    label: '# of Votes',
+                    data: randMon,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 1
+                }]
+            },
+        });
+
+        async function getData() {
+            await axios.get('http://localhost/PHP/api2/iot/read.php')
+                .then(response => {
+                    let dataku = response.data.iotapi;
+                    dataku.map(function (x) {
+                        mon1 = x.mon1;
+                        time = x.created;
+                    });
+
+                });
+            randMon = Math.random();
+            var now = new Date();
+            timeNow = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+            barChart.data.datasets[0].data.push(randMon);
+            barChart.data.labels.push(timeNow);
+            barChart.update();
+
+            lineChart.data.datasets[0].data.push(randMon);
+            lineChart.data.labels.push(timeNow);
+            lineChart.update();
+        }
+
+        setInterval(getData, 1000);
+    </script>
+</body>
+
+</html>
